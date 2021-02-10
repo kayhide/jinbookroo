@@ -18,10 +18,12 @@ let
         inotify-tools
         elixir
 
+        direnv
         docker-compose
-        lazydocker
-        gnumake
         git-lfs
+        gnumake
+        hivemind
+        lazydocker
 
         my-nodejs
         my-yarn
