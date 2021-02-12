@@ -22,8 +22,9 @@ let
         docker-compose
         git-lfs
         gnumake
-        hivemind
         lazydocker
+        overmind
+        tmux
 
         my-nodejs
         my-yarn
