@@ -26,26 +26,26 @@ defmodule JinbookrooWeb.UserControllerTest do
   describe "index" do
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200) == []
     end
   end
 
   describe "create user" do
     test "renders user when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      conn = post(conn, Routes.user_path(conn, :create), @create_attrs)
+      assert %{"id" => id} = json_response(conn, 201)
 
       conn = get(conn, Routes.user_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => ^id,
                "email" => "some email",
                "name" => "some name"
-             } = json_response(conn, 200)["data"]
+             } = json_response(conn, 200)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @invalid_attrs)
+      conn = post(conn, Routes.user_path(conn, :create), @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -54,20 +54,18 @@ defmodule JinbookrooWeb.UserControllerTest do
     setup [:create_user]
 
     test "renders user when data is valid", %{conn: conn, user: %User{id: id} = user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
-
-      conn = get(conn, Routes.user_path(conn, :show, id))
+      conn = put(conn, Routes.user_path(conn, :update, user), @update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)
 
       assert %{
-               "id" => id,
+               "id" => ^id,
                "email" => "some updated email",
                "name" => "some updated name"
-             } = json_response(conn, 200)["data"]
+             } = json_response(conn, 200)
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
+      conn = put(conn, Routes.user_path(conn, :update, user), @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
