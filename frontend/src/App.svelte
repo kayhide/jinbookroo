@@ -1,33 +1,25 @@
 <script>
-  import axios from "axios";
   import TailwindStyles from "./TailwindStyles.svelte";
   import { onMount } from "svelte";
-
-  const message = "Learn Svelte";
+  import * as Users from "./Api/Users.js";
 
   let name = "";
   let email = "";
   let users = [];
 
-  function loadUsers() {
-    axios.get("http://localhost:3000/api/users").then((res) => {
-      users = res.data;
-    });
-  }
-
   function handleCreateUser(event) {
     event.preventDefault();
     event.stopPropagation();
-    axios
-      .post("http://localhost:3000/api/users", { name, email })
-      .then((res) => {
-        console.log(res.data);
-        loadUsers();
-      });
+    Users.create({ name, email }).then((item) => {
+      users.push(item);
+      users = users;
+    });
   }
 
   onMount(() => {
-    loadUsers();
+    Users.list().then((items) => {
+      users = items;
+    });
   });
 </script>
 
