@@ -2,7 +2,8 @@
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
-    "test": "web-test-runner \"src/**/*.test.js\""
+    "test": "web-test-runner \"src/**/*.test.js\"",
+    "format": "prettier --write src"
   },
   "dependencies": {
     "axios": "^0.21.1",
