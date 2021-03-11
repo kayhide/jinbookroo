@@ -1,14 +1,34 @@
 import axios from "axios";
+import { writable } from "svelte/store";
 
-export function list() {
-  return axios.get("http://localhost:3000/api/users").then((res) => {
+const baseUrl = "http://localhost:3000/api";
+const usersUrl = `${baseUrl}/users`;
+
+function list() {
+  return axios.get(usersUrl).then((res) => {
     return res.data;
   });
-
 }
 
-export function create(args) {
-  return axios.post("http://localhost:3000/api/users", args).then((res) => {
+function create(args) {
+  return axios.post(usersUrl).then((res) => {
     return res.data;
   });
+}
+
+export function items() {
+  const { subscribe, set, update } = writable([]);
+  return {
+    subscribe,
+    list: () => {
+      list().then((xs) => {
+        set(xs);
+      });
+    },
+    create: (attrs) => {
+      create(attrs).then((x) => {
+        update((xs) => [...xs, x]);
+      });
+    },
+  };
 }

@@ -5,21 +5,16 @@
 
   let name = "";
   let email = "";
-  let users = [];
+  const users = Users.items();
 
   function handleCreateUser(event) {
     event.preventDefault();
     event.stopPropagation();
-    Users.create({ name, email }).then((item) => {
-      users.push(item);
-      users = users;
-    });
+    users.create({ name, email });
   }
 
   onMount(() => {
-    Users.list().then((items) => {
-      users = items;
-    });
+    users.list();
   });
 </script>
 
@@ -42,9 +37,9 @@
     <input class="control gray" bind:value="{email}" placeholder="Email" />
     <button class="control blue" type="submit"> Create </button>
   </form>
-  <div class="text-right">Count: {users.length}</div>
+  <div class="text-right">Count: {$users.length}</div>
   <ul class="my-2 py-2 bg-gray-100 rounded-lg">
-    {#each users as user}
+    {#each $users as user}
       <li class="w-h flex px-4 py-2 border-b border-gray-400">
         <div class="w-1/2">{user.name}</div>
         <div class="w-1/2">{user.email}</div>
