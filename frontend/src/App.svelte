@@ -3,7 +3,7 @@
   import TailwindStyles from "./TailwindStyles.svelte";
   import UserList from "./App/UserList.svelte";
 
-  export let url = "/";
+  export let url = location.pathname;
 
   history.pushState = new Proxy(history.pushState, {
     apply(target, arg, args) {

@@ -9,14 +9,17 @@ module.exports = {
   },
   plugins: ['@snowpack/plugin-svelte', '@snowpack/plugin-dotenv'],
   routes: [
-    /* Example: Enable an SPA Fallback in development: */
-    // {"match": "routes", "src": ".*", "dest": "/index.html"},
     {
       src: '/api/.*',
       dest: (req, res) => {
         proxy.web(req, res);
       },
-    }
+    },
+    {
+      match: "routes",
+      src: ".*",
+      dest: "/"
+    },
   ],
   optimize: {
     /* Example: Bundle your final build: */
