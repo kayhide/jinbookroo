@@ -14,10 +14,15 @@ defmodule JinbookrooWeb.Auth.Guardian do
   end
 
   def authenticate(email, password) do
-    user = Accounts.get_user_by_email!(email)
-    case validate_password(password, user.password_hash) do
-      true -> create_token(user)
-      false -> {:error, :unauthorized}
+    try do
+      user = Accounts.get_user_by_email!(email)
+
+      case validate_password(password, user.password_hash) do
+        true -> create_token(user)
+        false -> {:error, :unauthorized}
+      end
+    rescue
+      Ecto.NoResultsError -> {:error, :unauthorized}
     end
   end
 

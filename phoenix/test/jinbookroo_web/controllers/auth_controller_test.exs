@@ -31,9 +31,14 @@ defmodule JinbookrooWeb.AuthControllerTest do
       assert json_response(conn, 422)["errors"] != %{}
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
+    test "renders errors when password is invalid", %{conn: conn} do
       user = fixture(:user)
       conn = post(conn, Routes.auth_path(conn, :create), %{email: user.email, password: "notreally"})
+      assert json_response(conn, 401)["errors"] != %{}
+    end
+
+    test "renders errors when email is not found", %{conn: conn} do
+      conn = post(conn, Routes.auth_path(conn, :create), %{email: "not-such-user@jinbookroo.test", password: "notreally"})
       assert json_response(conn, 401)["errors"] != %{}
     end
   end

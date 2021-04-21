@@ -8,7 +8,7 @@ defmodule JinbookrooWeb.Router do
 
   scope "/api", JinbookrooWeb do
     pipe_through :api
-    resources "/auth", AuthController, except: [:new, :edit]
+    resources "/auth", AuthController, only: [:create]
     resources "/users", UserController, except: [:new, :edit]
   end
 
