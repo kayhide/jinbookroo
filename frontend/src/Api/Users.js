@@ -11,7 +11,7 @@ function list() {
 }
 
 function create(args) {
-  return axios.post(usersUrl).then((res) => {
+  return axios.post(usersUrl, args).then((res) => {
     return res.data;
   });
 }
