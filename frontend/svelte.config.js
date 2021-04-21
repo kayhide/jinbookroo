@@ -2,7 +2,11 @@ const sveltePreprocess = require("svelte-preprocess");
 
 const preprocess = sveltePreprocess({
   postcss: {
-    plugins: [require("tailwindcss"), require("autoprefixer")],
+    plugins: [
+      require('precss'),
+      require('tailwindcss'),
+      require('autoprefixer'),
+    ],
   },
 });
 
