@@ -19,7 +19,7 @@
 
 <style>
   .panel {
-    @apply my-16 mx-auto w-1/4;
+    @apply my-16 mx-2 md:mx-auto md:w-1/4;
     @apply border border-blue-400 rounded overflow-hidden;
     @apply shadow-lg;
     .panel-header {
@@ -31,6 +31,7 @@
   }
   .control {
     @apply px-4 py-2 border rounded;
+    @apply focus:outline-none focus:ring;
   }
   .gray {
     @apply text-gray-900 border-gray-400;
@@ -55,6 +56,7 @@
     <input
       class="control gray"
       type="email"
+      autofocus
       placeholder="Email"
       bind:value="{email}"
     />
