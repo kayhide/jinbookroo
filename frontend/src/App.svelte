@@ -3,6 +3,7 @@
   import TailwindStyles from "./TailwindStyles.svelte";
   import LoginPage from "./App/LoginPage.svelte";
   import UserList from "./App/UserList.svelte";
+  import { Store } from "./App/Store.js";
 
   export let url = location.pathname;
 
@@ -13,9 +14,9 @@
     },
   });
 
-  let token = "";
+  let token = Store.accessToken;
   function handleLogin(e) {
-    token = e.detail.token;
+    token.set(e.detail.token);
   }
 </script>
 
@@ -23,7 +24,7 @@
   {url}
 </div>
 <div class="m-2">
-  {token}
+  {$token}
 </div>
 <Router url="{url}">
   <nav>
