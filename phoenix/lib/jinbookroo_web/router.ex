@@ -10,6 +10,7 @@ defmodule JinbookrooWeb.Router do
     pipe_through :api
     resources "/auth", AuthController, only: [:create]
     resources "/users", UserController, except: [:new, :edit]
+    resources "/persons", PersonController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development
