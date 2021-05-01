@@ -4,6 +4,7 @@
   import TailwindStyles from "./TailwindStyles.svelte";
   import LoginPage from "./App/LoginPage.svelte";
   import UserList from "./App/UserList.svelte";
+  import PersonList from "./App/PersonList.svelte";
   import { Store } from "./App/Store.js";
 
   const route = writable(location.pathname);
@@ -43,7 +44,7 @@
       <Link to="/">Jinbookroo</Link>
     </div>
     {#if $token}
-      <Link to="/">Users</Link>
+      <Link to="/persons">Persons</Link>
       <Link to="/users">Users</Link>
       <Link to="/logout">Logout</Link>
     {:else}
@@ -57,6 +58,7 @@
     {#if $token}
       <Route path="/"><UserList /></Route>
       <Route path="/users"><UserList /></Route>
+      <Route path="/persons"><PersonList /></Route>
     {/if}
   </div>
 </Router>
