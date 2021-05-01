@@ -18,19 +18,10 @@
 </script>
 
 <style>
-  .control {
-    @apply px-4 py-2 border rounded;
-  }
-  .gray {
-    @apply text-gray-900 border-gray-400 hover:bg-gray-100;
-  }
-  .blue {
-    @apply text-blue-900 border-blue-400 hover:bg-blue-100;
-  }
 </style>
 
-<div class="m-16 font-sanserif">
-  <div class="text-lg">Users</div>
+<div class="mt-8 mx-16">
+  <div class="page-title">Users</div>
   <form class="my-4" on:submit="{handleCreateUser}">
     <input class="control gray" bind:value="{name}" placeholder="Name" />
     <input class="control gray" bind:value="{email}" placeholder="Email" />

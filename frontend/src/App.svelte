@@ -1,7 +1,7 @@
 <script>
   import { writable } from "svelte/store";
   import { Route, Router, Link, navigate } from "svelte-routing";
-  import TailwindStyles from "./TailwindStyles.svelte";
+  import Style from "./App/Style.svelte";
   import LoginPage from "./App/LoginPage.svelte";
   import UserList from "./App/UserList.svelte";
   import PersonList from "./App/PersonList.svelte";
@@ -38,9 +38,19 @@
   }
 </script>
 
+<style>
+  .header-nav {
+    @apply flex items-baseline bg-gray-300;
+  }
+
+  .app-title {
+    @apply text-gray-900 text-xl font-bold;
+  }
+</style>
+
 <Router url="{$route}">
-  <nav class="p-4 flex space-x-2 items-baseline bg-gray-300">
-    <div class="flex-grow text-gray-900 text-xl">
+  <nav class="header-nav p-4 space-x-2">
+    <div class="app-title flex-grow">
       <Link to="/">Jinbookroo</Link>
     </div>
     {#if $token}
