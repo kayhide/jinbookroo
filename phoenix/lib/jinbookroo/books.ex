@@ -7,6 +7,8 @@ defmodule Jinbookroo.Books do
   alias Jinbookroo.Repo
 
   alias Jinbookroo.Books.Person
+  alias Jinbookroo.Books.Deal
+  alias Jinbookroo.Books.Entry
 
   @doc """
   Returns the list of persons.
@@ -102,7 +104,6 @@ defmodule Jinbookroo.Books do
     Person.changeset(person, attrs)
   end
 
-  alias Jinbookroo.Books.Deal
 
   @doc """
   Returns the list of deals.
@@ -115,6 +116,10 @@ defmodule Jinbookroo.Books do
   """
   def list_deals do
     Repo.all(Deal)
+  end
+
+  def with_entries(deals) do
+    Repo.preload(deals, :entries)
   end
 
   @doc """
@@ -148,6 +153,13 @@ defmodule Jinbookroo.Books do
   def create_deal(attrs \\ %{}) do
     %Deal{}
     |> Deal.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_deal_with_entries(attrs \\ %{}, entries_attrs \\ []) do
+    %Deal{}
+    |> Deal.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:entries, entries_attrs |> Enum.map(&(Entry.changeset(%Entry{}, &1))))
     |> Repo.insert()
   end
 
@@ -198,7 +210,6 @@ defmodule Jinbookroo.Books do
     Deal.changeset(deal, attrs)
   end
 
-  alias Jinbookroo.Books.Entry
 
   @doc """
   Returns the list of entries.

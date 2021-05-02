@@ -14,6 +14,13 @@ defmodule JinbookrooWeb.FallbackController do
     |> render("error.json", changeset: changeset)
   end
 
+  def call(conn, {:error, :missing_param, key}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(JinbookrooWeb.ErrorView)
+    |> render("error.json", missing_param: key)
+  end
+
   # This clause is an example of how to handle resources that cannot be found.
   def call(conn, {:error, :not_found}) do
     conn

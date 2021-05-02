@@ -1,6 +1,7 @@
 defmodule JinbookrooWeb.DealView do
   use JinbookrooWeb, :view
   alias JinbookrooWeb.DealView
+  alias JinbookrooWeb.EntryView
 
   def render("index.json", %{deals: deals}) do
     render_many(deals, DealView, "deal.json")
@@ -12,6 +13,8 @@ defmodule JinbookrooWeb.DealView do
 
   def render("deal.json", %{deal: deal}) do
     %{id: deal.id,
-      made_on: deal.made_on}
+      made_on: deal.made_on,
+      entries: EntryView.render("index.json", %{entries: deal.entries})
+      }
   end
 end

@@ -5,7 +5,11 @@ defmodule JinbookrooWeb.DealControllerTest do
   alias Jinbookroo.Books.Deal
 
   @create_attrs %{
-    made_on: ~D[2010-04-17]
+    made_on: ~D[2010-04-17],
+    entries: [
+      %{description: "Some entry", side: :debit, subject: "Entry"},
+      %{description: "Some entry", side: :credit, subject: "Entry"}
+    ]
   }
   @update_attrs %{
     made_on: ~D[2011-05-18]
@@ -37,8 +41,10 @@ defmodule JinbookrooWeb.DealControllerTest do
 
       assert %{
                "id" => ^id,
-               "made_on" => "2010-04-17"
+               "made_on" => "2010-04-17",
+               "entries" => [%{"id" => _}, %{"id" => _}]
              } = json_response(conn, 200)
+
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
