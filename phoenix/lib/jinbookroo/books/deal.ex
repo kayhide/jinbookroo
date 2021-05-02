@@ -2,10 +2,14 @@ defmodule Jinbookroo.Books.Deal do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Jinbookroo.Books
+
   schema "deals" do
     field :made_on, :date
 
     timestamps()
+
+    has_many :entries, Books.Entry
   end
 
   @doc false

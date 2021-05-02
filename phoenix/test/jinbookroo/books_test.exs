@@ -120,4 +120,67 @@ defmodule Jinbookroo.BooksTest do
       assert %Ecto.Changeset{} = Books.change_deal(deal)
     end
   end
+
+  describe "entries" do
+    alias Jinbookroo.Books.Entry
+
+    @valid_attrs %{description: "some description", side: :debit, subject: "some subject"}
+    @update_attrs %{description: "some updated description", side: :credit, subject: "some updated subject"}
+    @invalid_attrs %{description: nil, side: nil, subject: nil}
+
+    def entry_fixture(attrs \\ %{}) do
+      {:ok, entry} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Books.create_entry()
+
+      entry
+    end
+
+    test "list_entries/0 returns all entries" do
+      entry = entry_fixture()
+      assert Books.list_entries() == [entry]
+    end
+
+    test "get_entry!/1 returns the entry with given id" do
+      entry = entry_fixture()
+      assert Books.get_entry!(entry.id) == entry
+    end
+
+    test "create_entry/1 with valid data creates a entry" do
+      assert {:ok, %Entry{} = entry} = Books.create_entry(@valid_attrs)
+      assert entry.description == "some description"
+      assert entry.side == :debit
+      assert entry.subject == "some subject"
+    end
+
+    test "create_entry/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Books.create_entry(@invalid_attrs)
+    end
+
+    test "update_entry/2 with valid data updates the entry" do
+      entry = entry_fixture()
+      assert {:ok, %Entry{} = entry} = Books.update_entry(entry, @update_attrs)
+      assert entry.description == "some updated description"
+      assert entry.side == :credit
+      assert entry.subject == "some updated subject"
+    end
+
+    test "update_entry/2 with invalid data returns error changeset" do
+      entry = entry_fixture()
+      assert {:error, %Ecto.Changeset{}} = Books.update_entry(entry, @invalid_attrs)
+      assert entry == Books.get_entry!(entry.id)
+    end
+
+    test "delete_entry/1 deletes the entry" do
+      entry = entry_fixture()
+      assert {:ok, %Entry{}} = Books.delete_entry(entry)
+      assert_raise Ecto.NoResultsError, fn -> Books.get_entry!(entry.id) end
+    end
+
+    test "change_entry/1 returns a entry changeset" do
+      entry = entry_fixture()
+      assert %Ecto.Changeset{} = Books.change_entry(entry)
+    end
+  end
 end

@@ -12,6 +12,7 @@ defmodule JinbookrooWeb.Router do
     resources "/users", UserController, except: [:new, :edit]
     resources "/persons", PersonController, except: [:new, :edit]
     resources "/deals", DealController, except: [:new, :edit]
+    resources "/entries", EntryController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development
