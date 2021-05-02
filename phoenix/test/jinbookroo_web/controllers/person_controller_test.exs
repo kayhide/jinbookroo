@@ -36,7 +36,7 @@ defmodule JinbookrooWeb.PersonControllerTest do
       conn = get(conn, Routes.person_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => ^id,
                "name" => "some name"
              } = json_response(conn, 200)
     end
@@ -57,7 +57,7 @@ defmodule JinbookrooWeb.PersonControllerTest do
       conn = get(conn, Routes.person_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => ^id,
                "name" => "some updated name"
              } = json_response(conn, 200)
     end
