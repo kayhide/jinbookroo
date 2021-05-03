@@ -1,19 +1,21 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import * as Auth from "../Api/Auth.js";
-
-  const dispatch = createEventDispatcher();
+  import { Store } from "./Store.js";
 
   let email = "";
   let password = "";
 
   const auth = Auth.item();
-  auth.subscribe(({ token }) => dispatch("login", { token }));
 
-  function handleLogin(event) {
+  const handleLogin = (event) => {
     event.preventDefault();
     event.stopPropagation();
     auth.login({ email, password });
+  };
+
+  $: if ($auth.token != Store.$accessToken) {
+    Store.accessToken.set($auth.token);
   }
 </script>
 

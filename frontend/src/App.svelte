@@ -11,10 +11,6 @@
   const route = writable(location.pathname);
   let token = Store.accessToken;
 
-  const handleLogin = (e) => {
-    token.set(e.detail.token);
-  };
-
   history.pushState = new Proxy(history.pushState, {
     apply(target, arg, args) {
       route.set(args[2]);
@@ -64,7 +60,7 @@
   </nav>
   <div>
     {#if !$token}
-      <Route path="/login"><LoginPage on:login="{handleLogin}" /></Route>
+      <Route path="/login"><LoginPage /></Route>
     {/if}
     {#if $token}
       <Route path="/"><DealListPage /></Route>
