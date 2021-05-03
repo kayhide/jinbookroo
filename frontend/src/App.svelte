@@ -3,8 +3,8 @@
   import { Route, Router, Link, navigate } from "svelte-routing";
   import Style from "./App/Style.svelte";
   import LoginPage from "./App/LoginPage.svelte";
-  import UserList from "./App/UserList.svelte";
-  import PersonList from "./App/PersonList.svelte";
+  import UserListPage from "./App/UserListPage.svelte";
+  import PersonListPage from "./App/PersonListPage.svelte";
   import DealListPage from "./App/DealListPage.svelte";
   import { Store } from "./App/Store.js";
 
@@ -68,8 +68,8 @@
     {/if}
     {#if $token}
       <Route path="/"><DealListPage /></Route>
-      <Route path="/users"><UserList /></Route>
-      <Route path="/persons"><PersonList /></Route>
+      <Route path="/users"><UserListPage /></Route>
+      <Route path="/persons"><PersonListPage /></Route>
     {/if}
   </div>
 </Router>
