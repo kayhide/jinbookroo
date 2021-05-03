@@ -5,6 +5,7 @@
   import LoginPage from "./App/LoginPage.svelte";
   import UserList from "./App/UserList.svelte";
   import PersonList from "./App/PersonList.svelte";
+  import DealListPage from "./App/DealListPage.svelte";
   import { Store } from "./App/Store.js";
 
   const route = writable(location.pathname);
@@ -66,7 +67,7 @@
       <Route path="/login"><LoginPage on:login="{handleLogin}" /></Route>
     {/if}
     {#if $token}
-      <Route path="/"><UserList /></Route>
+      <Route path="/"><DealListPage /></Route>
       <Route path="/users"><UserList /></Route>
       <Route path="/persons"><PersonList /></Route>
     {/if}

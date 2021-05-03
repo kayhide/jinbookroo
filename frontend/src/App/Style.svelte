@@ -21,6 +21,11 @@
     @apply focus:outline-none focus:ring;
   }
 
+  .button {
+    @apply p-2 rounded;
+    @apply focus:outline-none focus:ring;
+  }
+
   .gray {
     @apply text-gray-900 border-gray-400;
     &.control {
