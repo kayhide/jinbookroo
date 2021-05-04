@@ -39,6 +39,10 @@ defmodule Jinbookroo.Books do
   """
   def get_person!(id), do: Repo.get!(Person, id)
 
+  def with_person(record) do
+    Repo.preload(record, :person)
+  end
+
   @doc """
   Creates a person.
 

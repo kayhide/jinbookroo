@@ -13,6 +13,7 @@ defmodule JinbookrooWeb.EntryView do
   def render("entry.json", %{entry: entry}) do
     %{id: entry.id,
       ammount: entry.ammount,
+      person_id: entry.person_id,
       side: entry.side,
       subject: entry.subject,
       description: entry.description}

@@ -18,7 +18,8 @@ defmodule Jinbookroo.Books.Entry do
   @doc false
   def changeset(entry, attrs) do
     entry
-    |> cast(attrs, [:side, :subject, :ammount, :description])
+    |> cast(attrs, [:side, :subject, :ammount, :description, :person_id])
+    |> cast_assoc(:person)
     |> validate_required([:side, :subject, :ammount])
   end
 end

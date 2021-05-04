@@ -3,6 +3,7 @@ defmodule JinbookrooWeb.EntryControllerTest do
 
   alias Jinbookroo.Books
   alias Jinbookroo.Books.Entry
+  alias Jinbookroo.Books.Person
 
   @create_attrs %{
     ammount: 20,
@@ -18,8 +19,14 @@ defmodule JinbookrooWeb.EntryControllerTest do
   }
   @invalid_attrs %{description: nil, side: nil, subject: nil}
 
+  def fixture(:person) do
+    {:ok, person} = Books.create_person(%{name: "Person"})
+    person
+  end
+
   def fixture(:entry) do
-    {:ok, entry} = Books.create_entry(@create_attrs)
+    person = fixture(:person)
+    {:ok, entry} = Books.create_entry(Map.merge(@create_attrs, %{person_id: person.id}))
     entry
   end
 
@@ -52,6 +59,15 @@ defmodule JinbookrooWeb.EntryControllerTest do
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.entry_path(conn, :create), @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
+    end
+
+    test "associates person", %{conn: conn} do
+      %Person{id: person_id} = fixture(:person)
+      conn = post(conn, Routes.entry_path(conn, :create), Map.merge(@create_attrs, %{person_id: person_id}))
+      assert %{"id" => id} = json_response(conn, 201)
+
+      conn = get(conn, Routes.entry_path(conn, :show, id))
+      assert %{"person_id" => ^person_id} = json_response(conn, 200)
     end
   end
 
