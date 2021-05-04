@@ -8,6 +8,7 @@ defmodule Jinbookroo.Books.Entry do
     field :description, :string
     field :side, Ecto.Enum, values: [:debit, :credit]
     field :subject, :string
+    field :ammount, :integer
     belongs_to :deal, Books.Deal
     belongs_to :person, Books.Person
 
@@ -17,7 +18,7 @@ defmodule Jinbookroo.Books.Entry do
   @doc false
   def changeset(entry, attrs) do
     entry
-    |> cast(attrs, [:side, :subject, :description])
-    |> validate_required([:side, :subject, :description])
+    |> cast(attrs, [:side, :subject, :ammount, :description])
+    |> validate_required([:side, :subject, :ammount])
   end
 end

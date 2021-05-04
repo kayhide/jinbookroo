@@ -124,9 +124,9 @@ defmodule Jinbookroo.BooksTest do
   describe "entries" do
     alias Jinbookroo.Books.Entry
 
-    @valid_attrs %{description: "some description", side: :debit, subject: "some subject"}
-    @update_attrs %{description: "some updated description", side: :credit, subject: "some updated subject"}
-    @invalid_attrs %{description: nil, side: nil, subject: nil}
+    @valid_attrs %{ammount: 20, description: "some description", side: :debit, subject: "some subject"}
+    @update_attrs %{ammount: 20, description: "some updated description", side: :credit, subject: "some updated subject"}
+    @invalid_attrs %{ammount: nil, description: nil, side: nil, subject: nil}
 
     def entry_fixture(attrs \\ %{}) do
       {:ok, entry} =

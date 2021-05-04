@@ -7,8 +7,8 @@ defmodule JinbookrooWeb.DealControllerTest do
   @create_attrs %{
     made_on: ~D[2010-04-17],
     entries: [
-      %{description: "Some entry", side: :debit, subject: "Entry"},
-      %{description: "Some entry", side: :credit, subject: "Entry"}
+      %{description: "Some entry", side: :debit, subject: "Entry", person_id: "", ammount: 20},
+      %{description: "Some entry", side: :credit, subject: "Entry", ammount: 20}
     ]
   }
   @update_attrs %{

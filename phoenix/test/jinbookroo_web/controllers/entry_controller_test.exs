@@ -5,14 +5,16 @@ defmodule JinbookrooWeb.EntryControllerTest do
   alias Jinbookroo.Books.Entry
 
   @create_attrs %{
+    ammount: 20,
     description: "some description",
     side: :debit,
-    subject: "some subject"
+    subject: "some subject",
   }
   @update_attrs %{
+    ammount: 40,
     description: "some updated description",
     side: :credit,
-    subject: "some updated subject"
+    subject: "some updated subject",
   }
   @invalid_attrs %{description: nil, side: nil, subject: nil}
 
