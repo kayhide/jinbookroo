@@ -1,5 +1,5 @@
 import axios from "axios";
-import { writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 
 const baseUrl = "http://localhost:3000/api";
 const personsUrl = `${baseUrl}/persons`;
@@ -11,7 +11,7 @@ function list() {
 }
 
 function show(id) {
-  return axios.get(`${personsUrl}/${id}`, args).then((res) => {
+  return axios.get(`${personsUrl}/${id}`).then((res) => {
     return res.data;
   });
 }
@@ -23,36 +23,58 @@ function create(args) {
 }
 
 function destroy(id) {
-  return axios.post(`${personsUrl}/${id}`, args).then((res) => {
+  return axios.delete(`${personsUrl}/${id}`).then((res) => {
     return res.data;
   });
 }
 
 export function agent() {
+  const store = writable({});
   const items = writable([]);
   const item = writable(null);
-  return {
-    items,
-    item,
-    show: (id) => {
-      show(id).then((x) => {
-        item.set(x);
-      });
-    },
-    list: () => {
-      list().then((xs) => {
-        items.set(xs);
-      });
-    },
-    create: (attrs) => {
-      create(attrs).then((x) => {
-        items.update((xs) => [...xs, x]);
-      });
-    },
-    destroy: (id) => {
-      destroy(id).then(() => {
-        items.update((xs) => xs.filter((x) => x.id == id));
-      });
-    },
-  };
+  return derived([store, items, item], ([$store, $items, $item]) => {
+    return {
+      items: $items,
+      item: $item,
+      show: (id) => {
+        show(id).then((x) => {
+          $store[id] = x;
+          store.set($store);
+          item.set(x);
+        });
+      },
+      list: () => {
+        list().then((xs) => {
+          xs.forEach((x) => ($store[x.id] = x));
+          store.set($store);
+          items.set(xs);
+        });
+      },
+      create: (attrs) => {
+        create(attrs).then((x) => {
+          $store[id] = x;
+          store.set($store);
+          item.set(x);
+          items.set([...$items, x]);
+        });
+      },
+      destroy: (id) => {
+        destroy(id).then(() => {
+          delete $store[id];
+          store.set($store);
+          item.set(null);
+          items.set($items.filter((x) => x.id != id));
+        });
+      },
+      fetch: (id) => {
+        if (!$store[id]) {
+          show(id).then((x) => {
+            $store[id] = x;
+            store.set($store);
+          });
+        }
+      },
+      lookup: (id) => $store[id],
+    };
+  });
 }

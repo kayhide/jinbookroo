@@ -4,7 +4,6 @@
 
   let name = "";
   const agent = Persons.agent();
-  const persons = agent.items;
 
   const handleCreatePerson = (event) => {
     event.preventDefault();
@@ -13,7 +12,7 @@
   };
 
   onMount(() => {
-    agent.list();
+    $agent.list();
   });
 </script>
 
@@ -26,10 +25,10 @@
     <input class="control gray" bind:value="{name}" placeholder="Name" />
     <button class="control blue" type="submit"> Create </button>
   </form>
-  {#if 0 < $persons.length}
-    <div class="text-right my-2">Count: {$persons.length}</div>
+  {#if 0 < $agent.items.length}
+    <div class="text-right my-2">Count: {$agent.items.length}</div>
     <ul class="item-list">
-      {#each $persons as person}
+      {#each $agent.items as person (person.id)}
         <li>
           <div class="w-1/2">{person.name}</div>
         </li>
