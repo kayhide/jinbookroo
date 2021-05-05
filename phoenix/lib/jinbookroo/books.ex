@@ -123,7 +123,7 @@ defmodule Jinbookroo.Books do
   end
 
   def with_entries(deals) do
-    Repo.preload(deals, :entries)
+    Repo.preload(deals, [entries: from(e in Entry, order_by: e.id)])
   end
 
   @doc """
@@ -160,7 +160,12 @@ defmodule Jinbookroo.Books do
     |> Repo.insert()
   end
 
-  def create_deal_with_entries(attrs \\ %{}, entries_attrs \\ []) do
+  def create_deal_with_entries(attrs \\ %{}) do
+    entries_attrs = case attrs do
+      %{entries: entries} -> entries
+      %{"entries" => entries} -> entries
+      _ -> []
+    end
     %Deal{}
     |> Deal.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:entries, entries_attrs |> Enum.map(&(Entry.changeset(%Entry{}, &1))))
@@ -183,6 +188,18 @@ defmodule Jinbookroo.Books do
     deal
     |> Deal.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_deal_with_entries(%Deal{} = deal, attrs) do
+    entries_attrs = case attrs do
+      %{entries: entries} -> entries
+      %{"entries" => entries} -> entries
+      _ -> []
+    end
+    deal
+    |> Deal.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:entries, entries_attrs |> Enum.map(&(Entry.changeset(%Entry{}, &1))))
+   |> Repo.update()
   end
 
   @doc """

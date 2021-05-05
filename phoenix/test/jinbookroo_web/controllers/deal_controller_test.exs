@@ -12,12 +12,17 @@ defmodule JinbookrooWeb.DealControllerTest do
     ]
   }
   @update_attrs %{
-    made_on: ~D[2011-05-18]
+    made_on: ~D[2011-05-18],
+    entries: [
+      %{description: "Some entry", side: :debit, subject: "Entry", person_id: "", ammount: 10},
+      %{description: "Some entry", side: :credit, subject: "Entry", person_id: "", ammount: 20},
+      %{description: "Some entry", side: :credit, subject: "Entry", person_id: "", ammount: 30}
+    ]
   }
   @invalid_attrs %{made_on: nil}
 
   def fixture(:deal) do
-    {:ok, deal} = Books.create_deal(@create_attrs)
+    {:ok, deal} = Books.create_deal_with_entries(@create_attrs)
     deal
   end
 
@@ -64,13 +69,55 @@ defmodule JinbookrooWeb.DealControllerTest do
 
       assert %{
                "id" => ^id,
-               "made_on" => "2011-05-18"
+               "made_on" => "2011-05-18",
+               "entries" => [%{"id" => _}, %{"id" => _}, %{"id" => _}]
              } = json_response(conn, 200)
     end
 
     test "renders errors when data is invalid", %{conn: conn, deal: deal} do
       conn = put(conn, Routes.deal_path(conn, :update, deal), @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
+    end
+
+    test "creates entries", %{conn: conn, deal: %Deal{id: id} = deal} do
+      entries_attrs = deal.entries |> Enum.map(&(%{id: &1.id, side: &1.side, subject: &1.subject, ammount: &1.ammount}))
+      update_attrs = Map.merge(@update_attrs, %{entries: entries_attrs ++ [%{side: :credit, subject: "Created", ammount: 100}]})
+      conn = put(conn, Routes.deal_path(conn, :update, deal), update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)
+
+      conn = get(conn, Routes.deal_path(conn, :show, id))
+      assert %{
+               "entries" => [
+                 _, _,
+                 %{"id" => _, "side" => "credit", "subject" => "Created", "ammount" => 100}
+               ]
+             } = json_response(conn, 200)
+    end
+
+    test "updates entries", %{conn: conn, deal: %Deal{id: id} = deal} do
+      entries_attrs = deal.entries |> Enum.map(&(%{id: &1.id, side: :credit, subject: "Updated", ammount: 100}))
+      update_attrs = Map.merge(@update_attrs, %{entries: entries_attrs})
+      conn = put(conn, Routes.deal_path(conn, :update, deal), update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)
+
+      conn = get(conn, Routes.deal_path(conn, :show, id))
+      assert %{
+               "entries" => [
+                 %{"id" => _, "side" => "credit", "subject" => "Updated", "ammount" => 100},
+                 %{"id" => _, "side" => "credit", "subject" => "Updated", "ammount" => 100}
+               ]
+             } = json_response(conn, 200)
+    end
+
+    test "destroys entries", %{conn: conn, deal: %Deal{id: id} = deal} do
+      update_attrs = Map.merge(@update_attrs, %{entries: []})
+      conn = put(conn, Routes.deal_path(conn, :update, deal), update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)
+
+      conn = get(conn, Routes.deal_path(conn, :show, id))
+      assert %{
+               "entries" => []
+             } = json_response(conn, 200)
     end
   end
 

@@ -9,7 +9,7 @@ defmodule Jinbookroo.Books.Deal do
 
     timestamps()
 
-    has_many :entries, Books.Entry
+    has_many :entries, Books.Entry, on_replace: :delete
   end
 
   @doc false
