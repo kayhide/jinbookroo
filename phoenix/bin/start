@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -eu
+
+export APP_ENV=$1
+
+BASE_DIR="$(cd "$(dirname "$0")/.." > /dev/null 2>&1 && pwd)"
+cd "$BASE_DIR"
+
+case $APP_ENV in
+    test)
+        while true; do find lib test | entr -cdr bin/run-test || true; done
+        ;;
+esac

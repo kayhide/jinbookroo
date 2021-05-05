@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eu
+
+BASE_DIR="$(cd "$(dirname "$0")/.." > /dev/null 2>&1 && pwd)"
+cd "$BASE_DIR"
+
+if rg "@tag +:focus" test >/dev/null; then
+    mix test --only focus
+else
+    mix test
+fi
