@@ -3,20 +3,24 @@
   import Fa from "svelte-fa";
   import { faTrash } from "@fortawesome/free-solid-svg-icons";
   import DealForm from "./DealForm.svelte";
-  import * as Deals from "../Api/Deals.js";
-  import * as Persons from "../Api/Persons.js";
+  import Deals from "../Api/Deals.js";
+  import Persons from "../Api/Persons.js";
 
   const dealsAgent = Deals.agent();
-  const deals = dealsAgent.items;
   const personsAgent = Persons.agent();
+  let selectedDeal = null;
 
-  const handleCreateDeal = (e) => {
-    dealsAgent.create(e.detail);
+  const handleSubmitDeal = (e) => {
+    if (selectedDeal && selectedDeal.id) {
+      $dealsAgent.update(selectedDeal.id, e.detail);
+    } else {
+      $dealsAgent.create(e.detail);
+    }
   };
 
   $: toName = (person_id) => {
     if (person_id) {
-      const person = $personsAgent.lookup(person_id)
+      const person = $personsAgent.lookup(person_id);
       return person ? person.name : null;
     }
     return null;
@@ -24,7 +28,7 @@
 
   $: person_ids = [
     ...new Set(
-      $deals.flatMap(({ entries }) =>
+      $dealsAgent.items.flatMap(({ entries }) =>
         entries.map(({ person_id }) => person_id).filter((x) => x)
       )
     ),
@@ -34,7 +38,7 @@
   }
 
   onMount(() => {
-    dealsAgent.list();
+    $dealsAgent.list();
   });
 </script>
 
@@ -46,17 +50,21 @@
 
 <div class="mt-8 mx-16">
   <div class="page-title">Deals</div>
-  <DealForm on:submit="{handleCreateDeal}" />
-  {#if 0 < $deals.length}
-    <div class="text-right my-2">Count: {$deals.length}</div>
+  <DealForm attrs="{selectedDeal}" on:submit="{handleSubmitDeal}" />
+  {#if 0 < $dealsAgent.items.length}
+    <div class="text-right my-2">Count: {$dealsAgent.items.length}</div>
     <ul class="item-list">
-      {#each $deals as deal (deal.id)}
-        <li class="flex flex-col">
+      {#each $dealsAgent.items as deal (deal.id)}
+        <li
+          class="flex flex-col hover:bg-gray-400"
+          on:click="{(_) => (selectedDeal = deal)}"
+        >
           <div class="flex items-baseline">
+            <div class="flex-1">{deal.id}</div>
             <div class="flex-grow">{deal.made_on}</div>
             <button
               class="button danger p-2"
-              on:click="{dealsAgent.destroy(deal.id)}"
+              on:click="{$dealsAgent.destroy(deal.id)}"
               ><Fa icon="{faTrash}" /></button
             >
           </div>

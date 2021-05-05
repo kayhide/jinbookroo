@@ -1,8 +1,10 @@
 <script>
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
-  import * as Persons from "../Api/Persons.js";
+  import Persons from "../Api/Persons.js";
 
+  export let attrs = null;
+  let attrs_ = {};
   const dispatch = createEventDispatcher();
   const personsAgent = Persons.agent();
 
@@ -21,6 +23,20 @@
   $: entries.forEach((entry, i) => (entry.index = i));
   $: debits = entries.filter((entry) => entry.side === "debit");
   $: credits = entries.filter((entry) => entry.side === "credit");
+
+  $: if (attrs_ != attrs) {
+    attrs_ = attrs;
+    if (attrs) {
+      made_on = attrs.made_on;
+      entries = attrs.entries.map((entry) =>
+        Object.assign({}, entry, { person_id: entry.person_id || "" })
+      );
+    } else {
+      const now = new Date();
+      made_on = now.toISOString().substring(0, 10);
+      entries = [newEntry("debit"), newEntry("credit")];
+    }
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -59,9 +75,6 @@
   };
 
   onMount(() => {
-    const now = new Date();
-    made_on = now.toISOString().substring(0, 10);
-    entries = [newEntry("debit"), newEntry("credit")];
     $personsAgent.list();
   });
 </script>
@@ -90,7 +103,11 @@
     bind:value="{made_on}"
     placeholder="Made on"
   />
-  <button class="control blue" type="submit"> Create </button>
+  {#if attrs && attrs.id}
+    <button class="control blue" type="submit">Update</button>
+  {:else}
+    <button class="control blue" type="submit">Create</button>
+  {/if}
 </form>
 
 <div class="w-full flex items-start">
