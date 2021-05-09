@@ -69,7 +69,7 @@
     {/if}
   </div>
 </Router>
-<div class="fixed bottom-0 text-gray-400">
+<div class="fixed bottom-0 text-gray-400 select-none pointer-events-none">
   <div class="m-2">
     route: {$route}
   </div>

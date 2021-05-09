@@ -8,14 +8,16 @@
 
   const dealsAgent = Deals.agent();
   const personsAgent = Persons.agent();
-  let selectedDeal = null;
+  let selectedId = null;
 
-  const handleSubmitDeal = (e) => {
-    if (selectedDeal && selectedDeal.id) {
-      $dealsAgent.update(selectedDeal.id, e.detail);
-    } else {
-      $dealsAgent.create(e.detail);
-    }
+  const handleCreateDeal = (e) => {
+    $dealsAgent.create(e.detail);
+  };
+  const handleUpdateDeal = (id) => (e) => {
+    $dealsAgent.update(id, e.detail);
+  };
+  const handleSelect = (id) => (_) => {
+    selectedId = id;
   };
 
   $: toName = (person_id) => {
@@ -50,17 +52,19 @@
 
 <div class="mt-8 mx-16">
   <div class="page-title">Deals</div>
-  <DealForm attrs="{selectedDeal}" on:submit="{handleSubmitDeal}" />
-  {#if 0 < $dealsAgent.items.length}
-    <div class="text-right my-2">Count: {$dealsAgent.items.length}</div>
-    <ul class="item-list">
-      {#each $dealsAgent.items as deal (deal.id)}
+  <div class="text-right my-2">Count: {$dealsAgent.items.length}</div>
+  <ul class="item-list">
+    {#each $dealsAgent.items as deal (deal.id)}
+      {#if selectedId === deal.id}
+        <li class="w-full">
+          <DealForm attrs="{deal}" on:submit="{handleUpdateDeal(deal.id)}" />
+        </li>
+      {:else}
         <li
           class="flex flex-col hover:bg-gray-400"
-          on:click="{(_) => (selectedDeal = deal)}"
+          on:click="{handleSelect(deal.id)}"
         >
           <div class="flex items-baseline">
-            <div class="flex-1">{deal.id}</div>
             <div class="flex-grow">{deal.made_on}</div>
             <button
               class="button danger p-2"
@@ -82,9 +86,18 @@
             </div>
           {/each}
         </li>
-      {/each}
-    </ul>
-  {:else}
-    <div class="message">No deal</div>
-  {/if}
+      {/if}
+    {/each}
+    {#if selectedId}
+      <li>
+        <button class="control blue w-full" on:click="{handleSelect(null)}">
+          New item
+        </button>
+      </li>
+    {:else}
+      <li class="w-full">
+        <DealForm on:submit="{handleCreateDeal}" />
+      </li>
+    {/if}
+  </ul>
 </div>

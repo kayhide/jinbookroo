@@ -18,59 +18,46 @@
     };
   };
 
+  const isEmpty = ({ subject }) => !subject;
+
   let made_on;
-  let entries = [];
-  $: entries.forEach((entry, i) => (entry.index = i));
-  $: debits = entries.filter((entry) => entry.side === "debit");
-  $: credits = entries.filter((entry) => entry.side === "credit");
+  let debits = [];
+  let credits = [];
 
   $: if (attrs_ != attrs) {
     attrs_ = attrs;
     if (attrs) {
       made_on = attrs.made_on;
-      entries = attrs.entries.map((entry) =>
+      const entries = attrs.entries.map((entry) =>
         Object.assign({}, entry, { person_id: entry.person_id || "" })
       );
+      debits = entries.filter(({ side }) => side === "debit");
+      credits = entries.filter(({ side }) => side === "credit");
     } else {
-      const now = new Date();
-      made_on = now.toISOString().substring(0, 10);
-      entries = [newEntry("debit"), newEntry("credit")];
+      made_on = new Date().toISOString().substring(0, 10);
+    }
+  }
+  $: if (!debits.slice(-1).find(isEmpty)) {
+    debits = [...debits, newEntry("debit")];
+  } else {
+    while (2 <= debits.length && debits.slice(-2).every(isEmpty)) {
+      debits = debits.slice(0, -1);
+    }
+  }
+  $: if (!credits.slice(-1).find(isEmpty)) {
+    credits = [...credits, newEntry("credit")];
+  } else {
+    while (2 <= credits.length && credits.slice(-2).every(isEmpty)) {
+      credits = credits.slice(0, -1);
     }
   }
 
   const handleSubmit = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    const entries_ = entries.filter((entry) => entry.subject);
-    if (0 < entries_.length) {
-      dispatch("submit", { made_on, entries: entries_ });
-    }
-  };
-
-  const withEntry = (event, f) => {
-    const elm = event.target.closest("[data-entry-index]");
-    const entry = elm ? entries[elm.dataset.entryIndex] || null : null;
-    if (entry) {
-      f(entry);
-    }
-  };
-
-  const handleKeydown = (event) => {
-    switch (event.key) {
-      case "Enter":
-        withEntry(event, (entry) => {
-          entries = [...entries, newEntry(entry.side)];
-          event.preventDefault();
-        });
-        break;
-      case "Delete":
-        if (event.shiftKey) {
-          withEntry(event, (entry) => {
-            entries = entries.filter((e) => e != entry);
-            event.preventDefault();
-          });
-        }
-        break;
+    const entries = [...debits, ...credits].filter(({ subject }) => subject);
+    if (0 < entries.length) {
+      dispatch("submit", { made_on, entries });
     }
   };
 
@@ -86,8 +73,8 @@
   .credit {
     @apply bg-red-200;
   }
-  .entry-form {
-    @apply p-1;
+  .entry-control {
+    @apply w-full p-1 flex justify-items-stretch condensed;
   }
   .condensed {
     .control {
@@ -96,40 +83,32 @@
   }
 </style>
 
-<form class="mt-4 mb-2 flex justify-between" on:submit="{handleSubmit}">
-  <input
-    class="control gray"
-    type="date"
-    bind:value="{made_on}"
-    placeholder="Made on"
-  />
-  {#if attrs && attrs.id}
-    <button class="control blue" type="submit">Update</button>
-  {:else}
-    <button class="control blue" type="submit">Create</button>
-  {/if}
-</form>
+<form class="mt-4 w-full" on:submit="{handleSubmit}">
+  <div class="mb-2 flex justify-between">
+    <input
+      class="control gray"
+      type="date"
+      bind:value="{made_on}"
+      placeholder="Made on"
+    />
+    {#if attrs && attrs.id}
+      <button class="control blue" type="submit">Update</button>
+    {:else}
+      <button class="control blue" type="submit">Create</button>
+    {/if}
+  </div>
 
-<div class="w-full flex items-start">
-  {#each [debits, credits] as entries, i}
-    <div class="w-full {i === 0 ? 'debit' : 'credit'}">
-      {#each entries as entry}
-        <form
-          class="entry-form condensed {entry.side}"
-          data-entry-index="{entry.index}"
-        >
-          <div class="w-full flex justify-items-stretch">
+  <div class="w-full grid grid-cols-2">
+    {#each Array(Math.max(debits.length, credits.length)) as _, i}
+      {#each [debits[i], credits[i]] as entry}
+        {#if entry}
+          <div class="entry-control {entry.side}">
             <input
               class="w-full control gray"
               placeholder="Subject"
-              on:keydown="{handleKeydown}"
               bind:value="{entry.subject}"
             />
-            <select
-              class="w-full control gray"
-              on:keydown="{handleKeydown}"
-              bind:value="{entry.person_id}"
-            >
+            <select class="w-full control gray" bind:value="{entry.person_id}">
               <option value=""></option>
               {#each $personsAgent.items as person (person.id)}
                 <option value="{person.id}">{person.name}</option>
@@ -139,12 +118,13 @@
               class="w-full control gray text-right"
               type="number"
               placeholder="Ammount"
-              on:keydown="{handleKeydown}"
               bind:value="{entry.ammount}"
             />
           </div>
-        </form>
+        {:else}
+          <div></div>
+        {/if}
       {/each}
-    </div>
-  {/each}
-</div>
+    {/each}
+  </div>
+</form>

@@ -3,16 +3,16 @@ import { derived, get, writable } from "svelte/store";
 
 function client(entpoint) {
   return {
-    list: () => axios.get(entpoint).then((res) => res.data),
+    list: () => axios.get(entpoint).then(({ data }) => data),
 
-    show: (id) => axios.get(`${entpoint}/${id}`).then((res) => res.data),
+    show: (id) => axios.get(`${entpoint}/${id}`).then(({ data }) => data),
 
-    create: (args) => axios.post(entpoint, args).then((res) => res.data),
+    create: (args) => axios.post(entpoint, args).then(({ data }) => data),
 
     update: (id, args) =>
-      axios.put(`${entpoint}/${id}`, args).then((res) => res.data),
+      axios.put(`${entpoint}/${id}`, args).then(({ data }) => data),
 
-    destroy: (id) => axios.delete(`${entpoint}/${id}`).then((res) => res.data),
+    destroy: (id) => axios.delete(`${entpoint}/${id}`).then(({ data }) => data),
   };
 }
 
