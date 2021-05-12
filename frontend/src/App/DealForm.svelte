@@ -68,54 +68,74 @@
 
 <style>
   .debit {
-    @apply bg-green-200;
+    @apply border-green-200 divide-green-200;
+    .control {
+      @apply focus:ring-green-300;
+    }
   }
   .credit {
-    @apply bg-red-200;
+    @apply border-red-200 divide-red-200;
+    .control {
+      @apply focus:ring-red-300;
+    }
   }
   .entry-control {
-    @apply w-full p-1 flex justify-items-stretch condensed;
-  }
-  .condensed {
+    @apply w-full flex justify-items-stretch;
+    @apply divide-x border rounded overflow-hidden;
+
     .control {
       @apply ring-inset;
     }
   }
 </style>
 
-<form class="mt-4 w-full" on:submit="{handleSubmit}">
-  <div class="mb-2 flex justify-between">
+<form class="w-full space-y-1 group" on:submit="{handleSubmit}">
+  <div class="p-1 flex justify-between">
     <input
-      class="control gray"
+      class="control gray border rounded"
       type="date"
       bind:value="{made_on}"
       placeholder="Made on"
     />
-    {#if attrs && attrs.id}
-      <button class="control blue" type="submit">Update</button>
-    {:else}
-      <button class="control blue" type="submit">Create</button>
-    {/if}
+    <div
+      class="flex space-x-2 opacity-0 group-hover:opacity-100 transition duration-300"
+    >
+      {#if attrs && attrs.id}
+        <button class="control blue border rounded" type="submit">Update</button
+        >
+        <button
+          class="control red border rounded"
+          on:click="{(_) => dispatch('delete')}">Delete</button
+        >
+      {:else}
+        <button class="control green border rounded" type="submit"
+          >Create</button
+        >
+      {/if}
+    </div>
   </div>
 
-  <div class="w-full grid grid-cols-2">
+  <div class="w-full p-1 grid grid-cols-2 gap-x-2 gap-y-1">
     {#each Array(Math.max(debits.length, credits.length)) as _, i}
       {#each [debits[i], credits[i]] as entry}
         {#if entry}
           <div class="entry-control {entry.side}">
             <input
-              class="w-full control gray"
+              class="w-full control"
               placeholder="Subject"
               bind:value="{entry.subject}"
             />
-            <select class="w-full control gray" bind:value="{entry.person_id}">
+            <select
+              class="w-full control bg-white"
+              bind:value="{entry.person_id}"
+            >
               <option value=""></option>
               {#each $personsAgent.items as person (person.id)}
                 <option value="{person.id}">{person.name}</option>
               {/each}
             </select>
             <input
-              class="w-full control gray text-right"
+              class="w-full control text-right"
               type="number"
               placeholder="Ammount"
               bind:value="{entry.ammount}"

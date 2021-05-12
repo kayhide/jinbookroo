@@ -17,7 +17,7 @@
   }
 
   .control {
-    @apply px-4 py-2 border rounded;
+    @apply px-4 py-2;
     @apply focus:outline-none focus:ring;
   }
 
@@ -40,6 +40,26 @@
     }
     &.panel-header {
       @apply bg-blue-100;
+    }
+  }
+
+  .green {
+    @apply text-green-900 border-green-400;
+    &.control {
+      @apply hover:bg-green-100;
+    }
+    &.panel-header {
+      @apply bg-green-100;
+    }
+  }
+
+  .red {
+    @apply text-red-900 border-red-400;
+    &.control {
+      @apply hover:bg-red-100;
+    }
+    &.panel-header {
+      @apply bg-red-100;
     }
   }
 

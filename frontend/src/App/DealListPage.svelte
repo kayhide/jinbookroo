@@ -3,18 +3,25 @@
   import Fa from "svelte-fa";
   import { faTrash } from "@fortawesome/free-solid-svg-icons";
   import DealForm from "./DealForm.svelte";
+  import DealItem from "./DealItem.svelte";
   import Deals from "../Api/Deals.js";
   import Persons from "../Api/Persons.js";
 
-  const dealsAgent = Deals.agent();
+  const deals = Deals.agent();
   const personsAgent = Persons.agent();
   let selectedId = null;
 
-  const handleCreateDeal = (e) => {
-    $dealsAgent.create(e.detail);
+  const handleCreate = (e) => {
+    $deals.create(e.detail);
+    selectedId = null;
   };
-  const handleUpdateDeal = (id) => (e) => {
-    $dealsAgent.update(id, e.detail);
+  const handleUpdate = (id) => (e) => {
+    $deals.update(id, e.detail);
+    selectedId = null;
+  };
+  const handleDelete = (id) => (e) => {
+    $deals.destroy(id);
+    selectedId = null;
   };
   const handleSelect = (id) => (_) => {
     selectedId = id;
@@ -30,7 +37,7 @@
 
   $: person_ids = [
     ...new Set(
-      $dealsAgent.items.flatMap(({ entries }) =>
+      $deals.items.flatMap(({ entries }) =>
         entries.map(({ person_id }) => person_id).filter((x) => x)
       )
     ),
@@ -40,64 +47,40 @@
   }
 
   onMount(() => {
-    $dealsAgent.list();
+    $deals.list();
   });
 </script>
 
 <style>
-  .danger {
-    @apply text-red-300 hover:text-red-500;
+  .card {
+    @apply w-full block bg-gray-100 rounded-lg;
+    @apply flex px-4 py-2 border border-gray-200;
+    @apply focus-within:shadow transition duration-300;
   }
 </style>
 
 <div class="mt-8 mx-16">
   <div class="page-title">Deals</div>
-  <div class="text-right my-2">Count: {$dealsAgent.items.length}</div>
-  <ul class="item-list">
-    {#each $dealsAgent.items as deal (deal.id)}
+  <div class="text-right my-2">Count: {$deals.items.length}</div>
+  <div class="space-y-2">
+    {#each $deals.items as deal (deal.id)}
       {#if selectedId === deal.id}
-        <li class="w-full">
-          <DealForm attrs="{deal}" on:submit="{handleUpdateDeal(deal.id)}" />
-        </li>
+        <div class="card">
+          <DealForm attrs="{deal}" on:submit="{handleUpdate(deal.id)}" />
+        </div>
       {:else}
-        <li
-          class="flex flex-col hover:bg-gray-400"
-          on:click="{handleSelect(deal.id)}"
-        >
-          <div class="flex items-baseline">
-            <div class="flex-grow">{deal.made_on}</div>
-            <button
-              class="button danger p-2"
-              on:click="{$dealsAgent.destroy(deal.id)}"
-              ><Fa icon="{faTrash}" /></button
-            >
-          </div>
-          {#each deal.entries as entry (entry.id)}
-            <div
-              class="flex {entry.side === 'debit'
-                ? 'justify-start'
-                : 'justify-end'}"
-            >
-              <div class="w-1/2 p-2 flex">
-                <div class="flex-1">{entry.subject}</div>
-                <div class="flex-1">{toName(entry.person_id) || ""}</div>
-                <div class="flex-1 text-right">{entry.ammount}</div>
-              </div>
-            </div>
-          {/each}
-        </li>
+        <div class="card">
+          <DealItem
+            deal="{deal}"
+            toName="{toName}"
+            on:edit="{handleSelect(deal.id)}"
+            on:delete="{handleDelete(deal.id)}"
+          />
+        </div>
       {/if}
     {/each}
-    {#if selectedId}
-      <li>
-        <button class="control blue w-full" on:click="{handleSelect(null)}">
-          New item
-        </button>
-      </li>
-    {:else}
-      <li class="w-full">
-        <DealForm on:submit="{handleCreateDeal}" />
-      </li>
-    {/if}
-  </ul>
+    <div class="card">
+      <DealForm attrs="{null}" on:submit="{handleCreate}" />
+    </div>
+  </div>
 </div>
