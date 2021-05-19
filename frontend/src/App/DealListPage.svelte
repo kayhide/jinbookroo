@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { slide } from "svelte/transition";
   import Fa from "svelte-fa";
   import { faTrash } from "@fortawesome/free-solid-svg-icons";
   import DealForm from "./DealForm.svelte";
@@ -47,6 +48,15 @@
     person_ids.forEach($personsAgent.fetch);
   }
 
+  let nextKey = Date.now();
+  let wasCreating = false;
+  $: if (wasCreating != $deals.isCreating) {
+    wasCreating = $deals.isCreating;
+    if (!$deals.isCreating) {
+      nextKey = Date.now();
+    }
+  }
+
   onMount(() => {
     $deals.list();
   });
@@ -60,33 +70,31 @@
   }
 </style>
 
-<div class="mt-8 mx-16">
+<div class="my-8 mx-16">
   <div class="page-title">Deals</div>
   <div class="text-right my-2">Count: {$deals.items.length}</div>
   <div class="space-y-2">
     {#each $deals.items as deal (deal.id)}
-      {#if selectedId === deal.id}
-        <div class="card">
+      <div class="card" transition:slide="{{ duration: 200 }}">
+        {#if selectedId === deal.id}
           <DealForm
             attrs="{deal}"
             on:submit="{handleUpdate(deal.id)}"
             on:cancel="{handleSelect(null)}"
           />
-        </div>
-      {:else}
-        <div class="card">
+        {:else}
           <DealItem
             deal="{deal}"
             toName="{toName}"
             on:edit="{handleSelect(deal.id)}"
             on:delete="{handleDelete(deal.id)}"
           />
-        </div>
-      {/if}
+        {/if}
+      </div>
     {/each}
     {#if !selectedId}
-      {#key $deals.items}
-        <div class="card">
+      {#key nextKey}
+        <div class="card" transition:slide="{{ duration: 200 }}">
           <DealForm attrs="{null}" on:submit="{handleCreate}" />
         </div>
       {/key}

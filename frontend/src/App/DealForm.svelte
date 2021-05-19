@@ -104,7 +104,7 @@
       placeholder="Made on"
     />
     <div
-      class="flex space-x-2 opacity-0 group-hover:opacity-100 transition duration-300"
+      class="flex space-x-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition duration-300"
     >
       {#if attrs && attrs.id}
         <button class="control gray border rounded" on:click="{handleCancel}"
