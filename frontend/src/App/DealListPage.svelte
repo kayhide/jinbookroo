@@ -10,6 +10,7 @@
   const deals = Deals.agent();
   const personsAgent = Persons.agent();
   let selectedId = null;
+  let editing = null;
 
   const handleCreate = (e) => {
     $deals.create(e.detail);
@@ -66,7 +67,11 @@
     {#each $deals.items as deal (deal.id)}
       {#if selectedId === deal.id}
         <div class="card">
-          <DealForm attrs="{deal}" on:submit="{handleUpdate(deal.id)}" />
+          <DealForm
+            attrs="{deal}"
+            on:submit="{handleUpdate(deal.id)}"
+            on:cancel="{handleSelect(null)}"
+          />
         </div>
       {:else}
         <div class="card">
@@ -79,8 +84,12 @@
         </div>
       {/if}
     {/each}
-    <div class="card">
-      <DealForm attrs="{null}" on:submit="{handleCreate}" />
-    </div>
+    {#if !selectedId}
+      {#key $deals.items}
+        <div class="card">
+          <DealForm attrs="{null}" on:submit="{handleCreate}" />
+        </div>
+      {/key}
+    {/if}
   </div>
 </div>

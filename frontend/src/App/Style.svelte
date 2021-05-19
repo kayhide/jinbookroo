@@ -29,7 +29,7 @@
   .gray {
     @apply text-gray-900 border-gray-400;
     &.control {
-      @apply hover:bg-gray-100;
+      @apply hover:bg-gray-200;
     }
   }
 

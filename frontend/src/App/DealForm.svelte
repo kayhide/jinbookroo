@@ -61,6 +61,12 @@
     }
   };
 
+  const handleCancel = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dispatch("cancel");
+  };
+
   onMount(() => {
     $personsAgent.list();
   });
@@ -101,6 +107,9 @@
       class="flex space-x-2 opacity-0 group-hover:opacity-100 transition duration-300"
     >
       {#if attrs && attrs.id}
+        <button class="control gray border rounded" on:click="{handleCancel}"
+          >Cancel</button
+        >
         <button class="control blue border rounded" type="submit">Update</button
         >
         <button
