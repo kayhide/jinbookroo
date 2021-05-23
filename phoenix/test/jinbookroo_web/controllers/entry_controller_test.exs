@@ -26,7 +26,7 @@ defmodule JinbookrooWeb.EntryControllerTest do
 
   def fixture(:entry) do
     person = fixture(:person)
-    {:ok, entry} = Books.create_entry(Map.merge(@create_attrs, %{person_id: person.id}))
+    {:ok, entry} = Books.create_entry(Map.merge(@create_attrs, %{person: person}))
     entry
   end
 
@@ -36,8 +36,18 @@ defmodule JinbookrooWeb.EntryControllerTest do
 
   describe "index" do
     test "lists all entries", %{conn: conn} do
+      [entry_id1, entry_id2] = [fixture(:entry), fixture(:entry)] |> Enum.map(&(&1.id))
       conn = get(conn, Routes.entry_path(conn, :index))
-      assert json_response(conn, 200) == []
+      assert [%{"id" => ^entry_id1}, %{"id" => ^entry_id2}] = json_response(conn, 200)
+    end
+
+    test "filters by person_id", %{conn: conn} do
+      entry = fixture(:entry)
+      {:ok, person2} = Books.create_person(%{name: "Person 2"})
+      {:ok, _} = Books.create_entry(Map.merge(@create_attrs, %{person: person2}))
+      person_id = entry.person_id
+      conn = get(conn, Routes.entry_path(conn, :index), %{person_id: person_id})
+      assert [%{"person_id" => ^person_id}] = json_response(conn, 200)
     end
   end
 

@@ -3,7 +3,7 @@ import { derived, get, writable } from "svelte/store";
 
 function client(entpoint) {
   return {
-    list: () => axios.get(entpoint).then(({ data }) => data),
+    list: (params) => axios.get(entpoint, { params }).then(({ data }) => data),
 
     show: (id) => axios.get(`${entpoint}/${id}`).then(({ data }) => data),
 
@@ -40,8 +40,8 @@ export default function (endpoint) {
             item.set(x);
           });
         },
-        list: () => {
-          client_.list().then((xs) => {
+        list: (params) => {
+          client_.list(params).then((xs) => {
             xs.forEach((x) => ($store[x.id] = x));
             store.set($store);
             items.set(xs);
