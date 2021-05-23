@@ -5,6 +5,7 @@
   import LoginPage from "./App/LoginPage.svelte";
   import UserListPage from "./App/UserListPage.svelte";
   import PersonListPage from "./App/PersonListPage.svelte";
+  import EntryListPage from "./App/EntryListPage.svelte";
   import DealListPage from "./App/DealListPage.svelte";
   import { Store } from "./App/Store.js";
 
@@ -51,6 +52,7 @@
       <Link to="/">Jinbookroo</Link>
     </div>
     {#if $token}
+      <Link to="/entries">Entries</Link>
       <Link to="/persons">Persons</Link>
       <Link to="/users">Users</Link>
       <Link to="/logout">Logout</Link>
@@ -64,6 +66,7 @@
     {/if}
     {#if $token}
       <Route path="/"><DealListPage /></Route>
+      <Route path="/entries"><EntryListPage /></Route>
       <Route path="/users"><UserListPage /></Route>
       <Route path="/persons"><PersonListPage /></Route>
     {/if}

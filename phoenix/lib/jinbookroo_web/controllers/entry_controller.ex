@@ -7,7 +7,7 @@ defmodule JinbookrooWeb.EntryController do
   action_fallback JinbookrooWeb.FallbackController
 
   def index(conn, _params) do
-    entries = Books.list_entries()
+    entries = Books.list_entries() |> Books.with_deal() |> Books.with_person()
     render(conn, "index.json", entries: entries)
   end
 

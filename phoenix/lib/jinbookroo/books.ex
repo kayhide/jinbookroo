@@ -142,6 +142,10 @@ defmodule Jinbookroo.Books do
   """
   def get_deal!(id), do: Repo.get!(Deal, id)
 
+  def with_deal(record) do
+    Repo.preload(record, :deal)
+  end
+
   @doc """
   Creates a deal.
 
