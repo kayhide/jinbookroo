@@ -26,12 +26,12 @@ defmodule JinbookrooWeb.Auth.Guardian do
     end
   end
 
-  defp validate_password(password, password_hash) do
-    Argon2.verify_pass(password, password_hash)
+  def create_token(user) do
+    {:ok, token, _claims} = encode_and_sign(user)
+    {:ok, token}
   end
 
-  defp create_token(user) do
-    {:ok, token, _claims} = encode_and_sign(user)
-    {:ok, user, token}
+  defp validate_password(password, password_hash) do
+    Argon2.verify_pass(password, password_hash)
   end
 end

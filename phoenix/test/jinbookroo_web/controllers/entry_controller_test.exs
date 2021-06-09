@@ -1,6 +1,8 @@
 defmodule JinbookrooWeb.EntryControllerTest do
   use JinbookrooWeb.ConnCase
 
+  alias JinbookrooWeb.Auth.Guardian
+  alias Jinbookroo.Accounts
   alias Jinbookroo.Books
   alias Jinbookroo.Books.Entry
   alias Jinbookroo.Books.Person
@@ -31,7 +33,12 @@ defmodule JinbookrooWeb.EntryControllerTest do
   end
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    {:ok, user} = Accounts.create_user(%{email: "user@jinbookroo.test", name: "User 1"})
+    {:ok, token} = Guardian.create_token(user)
+    conn = conn
+    |> put_req_header("authorization", "Bearer " <> token)
+    |> put_req_header("accept", "application/json")
+    {:ok, conn: conn, current_user: user}
   end
 
   describe "index" do

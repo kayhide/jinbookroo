@@ -6,9 +6,22 @@ defmodule JinbookrooWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :authed do
+    plug Guardian.Plug.Pipeline,
+      module: JinbookrooWeb.Auth.Guardian,
+      error_handler: JinbookrooWeb.Auth.ErrorHandler
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.EnsureAuthenticated
+    plug Guardian.Plug.LoadResource
+  end
+
   scope "/api", JinbookrooWeb do
     pipe_through :api
     resources "/auth", AuthController, only: [:create]
+  end
+
+  scope "/api", JinbookrooWeb do
+    pipe_through [:api, :authed]
     resources "/users", UserController, except: [:new, :edit]
     resources "/persons", PersonController, except: [:new, :edit]
     resources "/deals", DealController, except: [:new, :edit]

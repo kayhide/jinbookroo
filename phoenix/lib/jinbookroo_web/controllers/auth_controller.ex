@@ -7,7 +7,7 @@ defmodule JinbookrooWeb.AuthController do
   action_fallback JinbookrooWeb.FallbackController
 
   def create(conn, %{"email" => email, "password" => password}) do
-    with {:ok, %User{}, token} <- Guardian.authenticate(email, password) do
+    with {:ok, token} <- Guardian.authenticate(email, password) do
       conn
       |> render("show.json", auth: %{token: token})
     end
