@@ -1,13 +1,15 @@
 <script>
+  import { onMount } from "svelte";
   import { writable } from "svelte/store";
   import { Route, Router, Link, navigate } from "svelte-routing";
   import Style from "./App/Style.svelte";
+  import Auth from "./Api/Auth.js";
   import LoginPage from "./App/LoginPage.svelte";
   import UserListPage from "./App/UserListPage.svelte";
   import PersonListPage from "./App/PersonListPage.svelte";
   import EntryListPage from "./App/EntryListPage.svelte";
   import DealListPage from "./App/DealListPage.svelte";
-  import { Store } from "./App/Store.js";
+  import Store from "./App/Store.js";
 
   const route = writable(location.pathname);
   let token = Store.accessToken;
@@ -34,6 +36,22 @@
         setTimeout(() => navigate("/login"));
       }
   }
+
+  let auth = Auth();
+
+  $: if ($auth.verified) {
+    if ($auth.token) {
+      console.log("token is valid");
+    } else {
+      console.log("token is invalid");
+      token.set(null);
+      setTimeout(() => navigate("/"));
+    }
+  }
+
+  onMount(() => {
+    auth.verify($token);
+  });
 </script>
 
 <style>
@@ -51,7 +69,7 @@
     <div class="app-title flex-grow">
       <Link to="/">Jinbookroo</Link>
     </div>
-    {#if $token}
+    {#if $auth.verified}
       <Link to="/entries">Entries</Link>
       <Link to="/persons">Persons</Link>
       <Link to="/users">Users</Link>
@@ -61,10 +79,10 @@
     {/if}
   </nav>
   <div>
-    {#if !$token}
+    {#if !$auth.verified}
       <Route path="/login"><LoginPage /></Route>
     {/if}
-    {#if $token}
+    {#if $auth.verified}
       <Route path="/"><DealListPage /></Route>
       <Route path="/entries"><EntryListPage /></Route>
       <Route path="/users"><UserListPage /></Route>

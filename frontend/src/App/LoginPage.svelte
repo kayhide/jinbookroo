@@ -1,12 +1,12 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import * as Auth from "../Api/Auth.js";
-  import { Store } from "./Store.js";
+  import Auth from "../Api/Auth.js";
+  import Store from "./Store.js";
 
   let email = "";
   let password = "";
 
-  const auth = Auth.item();
+  const auth = Auth();
 
   const handleLogin = (event) => {
     event.preventDefault();

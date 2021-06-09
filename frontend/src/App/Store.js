@@ -25,6 +25,8 @@ function writable_(key, initialValue) {
   };
 }
 
-export const Store = {
+const store = {
   accessToken: writable_("access-token", ""),
 };
+
+export default store;

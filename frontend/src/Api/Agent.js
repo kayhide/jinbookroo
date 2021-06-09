@@ -1,30 +1,66 @@
 import axios from "axios";
 import { derived, get, writable } from "svelte/store";
+import Store from "../App/Store.js";
 
 function client(entpoint) {
   return {
-    list: (params) => axios.get(entpoint, { params }).then(({ data }) => data),
+    list: (token, params) =>
+      axios
+        .get(entpoint, {
+          params,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(({ data }) => data),
 
-    show: (id) => axios.get(`${entpoint}/${id}`).then(({ data }) => data),
+    show: (token, id) =>
+      axios
+        .get(`${entpoint}/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(({ data }) => data),
+    create: (token, args) =>
+      axios
+        .post(entpoint, args, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(({ data }) => data),
 
-    create: (args) => axios.post(entpoint, args).then(({ data }) => data),
+    update: (token, id, args) =>
+      axios
+        .put(`${entpoint}/${id}`, args, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(({ data }) => data),
 
-    update: (id, args) =>
-      axios.put(`${entpoint}/${id}`, args).then(({ data }) => data),
-
-    destroy: (id) => axios.delete(`${entpoint}/${id}`).then(({ data }) => data),
+    destroy: (token, id) =>
+      axios
+        .delete(`${entpoint}/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(({ data }) => data),
   };
 }
 
 export default function (endpoint) {
   const client_ = client(endpoint);
+  const token = Store.accessToken;
   const store = writable({});
   const items = writable([]);
   const item = writable(null);
   const submittings = writable({ creatings: 0, updatings: 0, destroyings: 0 });
   return derived(
-    [store, items, item, submittings],
-    ([$store, $items, $item, $submittings]) => {
+    [token, store, items, item, submittings],
+    ([$token, $store, $items, $item, $submittings]) => {
       const { creatings, updatings, destroyings } = $submittings;
       return {
         items: $items,
@@ -34,14 +70,14 @@ export default function (endpoint) {
         isDestroying: 0 < destroyings,
         submitting: 0 < creatings + updatings + destroyings,
         show: (id) => {
-          client_.show(id).then((x) => {
+          client_.show($token, id).then((x) => {
             $store[id] = x;
             store.set($store);
             item.set(x);
           });
         },
         list: (params) => {
-          client_.list(params).then((xs) => {
+          client_.list($token, params).then((xs) => {
             xs.forEach((x) => ($store[x.id] = x));
             store.set($store);
             items.set(xs);
@@ -51,7 +87,7 @@ export default function (endpoint) {
           submittings.update((x) =>
             Object.assign(x, { creatings: x.creatings + 1 })
           );
-          client_.create(attrs).then((x) => {
+          client_.create($token, attrs).then((x) => {
             $store[x.id] = x;
             store.set($store);
             item.set(x);
@@ -65,7 +101,7 @@ export default function (endpoint) {
           submittings.update((x) =>
             Object.assign(x, { updatings: x.updatings + 1 })
           );
-          client_.update(id, attrs).then((x) => {
+          client_.update($token, id, attrs).then((x) => {
             $store[x.id] = x;
             store.set($store);
             item.set(x);
@@ -82,7 +118,7 @@ export default function (endpoint) {
           submittings.update((x) =>
             Object.assign(x, { destroyings: x.destroyings + 1 })
           );
-          client_.destroy(id).then(() => {
+          client_.destroy($token, id).then(() => {
             delete $store[id];
             store.set($store);
             item.set(null);
@@ -94,7 +130,7 @@ export default function (endpoint) {
         },
         fetch: (id) => {
           if (!$store[id]) {
-            client_.show(id).then((x) => {
+            client_.show($token, id).then((x) => {
               $store[id] = x;
               store.set($store);
             });
