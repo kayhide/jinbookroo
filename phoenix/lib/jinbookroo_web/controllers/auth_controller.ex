@@ -19,4 +19,9 @@ defmodule JinbookrooWeb.AuthController do
     |> put_view(JinbookrooWeb.ErrorView)
     |> render(:"422")
   end
+
+  def index(conn, _) do
+    conn
+    |> Plug.Conn.send_resp(:no_content, "")
+  end
 end

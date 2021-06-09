@@ -17,11 +17,12 @@ defmodule JinbookrooWeb.Router do
 
   scope "/api", JinbookrooWeb do
     pipe_through :api
-    resources "/auth", AuthController, only: [:create]
+    post "/auth", AuthController, :create
   end
 
   scope "/api", JinbookrooWeb do
     pipe_through [:api, :authed]
+    get "/auth", AuthController, :index
     resources "/users", UserController, except: [:new, :edit]
     resources "/persons", PersonController, except: [:new, :edit]
     resources "/deals", DealController, except: [:new, :edit]

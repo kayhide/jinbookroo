@@ -1,6 +1,7 @@
 defmodule JinbookrooWeb.AuthControllerTest do
   use JinbookrooWeb.ConnCase
 
+  alias JinbookrooWeb.Auth.Guardian
   alias Jinbookroo.Accounts
 
   @user_attrs %{
@@ -18,7 +19,7 @@ defmodule JinbookrooWeb.AuthControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  describe "create auth" do
+  describe "create" do
     test "renders token when data is valid", %{conn: conn} do
       user = fixture(:user)
       conn = post(conn, Routes.auth_path(conn, :create), %{email: user.email, password: @user_attrs.password})
@@ -39,6 +40,29 @@ defmodule JinbookrooWeb.AuthControllerTest do
 
     test "renders errors when email is not found", %{conn: conn} do
       conn = post(conn, Routes.auth_path(conn, :create), %{email: "not-such-user@jinbookroo.test", password: "notreally"})
+      assert json_response(conn, 401)["errors"] != %{}
+    end
+  end
+
+  describe "index" do
+    test "renders no content", %{conn: conn} do
+      user = fixture(:user)
+      {:ok, token} = Guardian.create_token(user)
+      conn = conn
+      |> put_req_header("authorization", "Bearer " <> token)
+      conn = get(conn, Routes.auth_path(conn, :index))
+      assert response(conn, 204) == ""
+    end
+
+    test "renders errors when not authorized", %{conn: conn} do
+      conn = get(conn, Routes.auth_path(conn, :index))
+      assert json_response(conn, 401)["errors"] != %{}
+    end
+
+    test "renders errors when token is invalid", %{conn: conn} do
+      conn = conn
+      |> put_req_header("authorization", "Bearer invalidtoken")
+      conn = get(conn, Routes.auth_path(conn, :index))
       assert json_response(conn, 401)["errors"] != %{}
     end
   end
