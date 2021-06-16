@@ -1,5 +1,9 @@
 use Mix.Config
 
+config :jinbookroo, Jinbookroo.Repo,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: 2
+
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
 # when generating URLs.
@@ -10,7 +14,8 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :jinbookroo, JinbookrooWeb.Endpoint,
-  url: [host: "example.com", port: 80],
+  server: true,
+  url: [host: System.get_env("APP_NAME") <> ".gigalixirapp.com", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
