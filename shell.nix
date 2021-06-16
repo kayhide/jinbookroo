@@ -1,9 +1,7 @@
-{ overlays ? []
+{ overlays ? [ ]
 }@args:
 
 let
-  inherit (nixpkgs) pkgs;
-
   nodejs-overlay = self: super: {
     my-nodejs = self.nodejs-14_x;
     my-yarn = super.yarn.override {
@@ -11,35 +9,43 @@ let
     };
   };
 
+  poetry-env-overlay = self: super: {
+    poetry-env = import ./nix/poetry-env { pkgs = self; };
+  };
+
   env-overlay = self: super: {
+    my-gigalixir = super.runCommand "my-gigalixir" { } ''
+      mkdir -p $out/bin
+      ln -s ${self.poetry-env}/bin/gigalixir $out/bin/gigalixir
+    '';
+
     my-app-env = super.buildEnv {
       name = "my-app-env";
       paths = with self; [
-        inotify-tools
-        elixir
-
         direnv
         docker-compose
-        git-lfs
         gnumake
+        inotify-tools
         lazydocker
         overmind
-        tmux
+        postgresql_12
 
         my-nodejs
         my-yarn
-
-        postgresql_12
+        my-gigalixir
       ];
     };
   };
 
-  nixpkgs = import <nixpkgs> (args // {
+  nixpkgs = import ./nix/nixpkgs.nix (args // {
     overlays = overlays ++ [
       nodejs-overlay
+      poetry-env-overlay
       env-overlay
     ];
   });
+
+  inherit (nixpkgs) pkgs;
 
 in
 
