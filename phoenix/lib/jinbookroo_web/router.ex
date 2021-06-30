@@ -29,6 +29,20 @@ defmodule JinbookrooWeb.Router do
     resources "/entries", EntryController, except: [:new, :edit]
   end
 
+  pipeline :static do
+    plug Plug.Static,
+      at: "/",
+      from: :jinbookroo,
+      gzip: false
+  end
+  scope "/", JinbookrooWeb do
+    pipe_through :static
+  end
+  # scope "/", JinbookrooWeb do
+  #   match :*, "/*path", PlainController, :error_404
+  # end
+
+
   # Enables LiveDashboard only for development
   #
   # If you want to use the LiveDashboard in production, you should put
