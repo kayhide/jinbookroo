@@ -20,11 +20,12 @@ defmodule JinbookrooWeb.Endpoint do
   #
   # You should set gzip to true if you are running phx.digest
   # when deploying your static files in production.
+  plug Plug.Static.IndexHtml, at: "/"
   plug Plug.Static,
     at: "/",
     from: :jinbookroo,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: ~w(_snowpack dist favicon.ico index.html logo.svg robots.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
