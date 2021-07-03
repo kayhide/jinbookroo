@@ -7,7 +7,9 @@ module.exports = {
     public: {url: '/', static: true},
     src: {url: '/dist'},
   },
-  plugins: ['@snowpack/plugin-svelte', '@snowpack/plugin-dotenv'],
+  plugins: [
+    '@snowpack/plugin-svelte'
+  ],
   routes: [
     {
       src: '/api/.*',
@@ -21,9 +23,8 @@ module.exports = {
       dest: "/"
     },
   ],
-  optimize: {
-    /* Example: Bundle your final build: */
-    // "bundle": true,
+  env: {
+    API_URL: process.env.SNOWPACK_PUBLIC_API_URL || "http://localhost:3000/api"
   },
   packageOptions: {
     /* ... */

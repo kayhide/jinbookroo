@@ -1,8 +1,8 @@
 import Agent from "./Agent.js";
+import Env from "../App/Env.js";
 
-const baseUrl = "http://localhost:3000/api";
-const dealsUrl = `${baseUrl}/deals`;
+const endpoint = `${Env.API_URL}/deals`;
 
 export default {
-  agent: () => Agent(dealsUrl),
+  agent: () => Agent(endpoint),
 };

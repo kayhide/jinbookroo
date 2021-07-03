@@ -3,49 +3,44 @@ import { derived, get, writable } from "svelte/store";
 import Store from "../App/Store.js";
 
 function client(entpoint) {
+  const headers = (token) => {
+    return {
+      Authorization: `Bearer ${token}`,
+    };
+  };
   return {
     list: (token, params) =>
       axios
         .get(entpoint, {
           params,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: headers(token),
         })
         .then(({ data }) => data),
 
     show: (token, id) =>
       axios
         .get(`${entpoint}/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: headers(token),
         })
         .then(({ data }) => data),
     create: (token, args) =>
       axios
         .post(entpoint, args, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: headers(token),
         })
         .then(({ data }) => data),
 
     update: (token, id, args) =>
       axios
         .put(`${entpoint}/${id}`, args, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: headers(token),
         })
         .then(({ data }) => data),
 
     destroy: (token, id) =>
       axios
         .delete(`${entpoint}/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: headers(token),
         })
         .then(({ data }) => data),
   };

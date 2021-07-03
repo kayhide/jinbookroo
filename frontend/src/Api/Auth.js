@@ -1,17 +1,17 @@
 import axios from "axios";
 import { writable } from "svelte/store";
+import Env from "../App/Env.js";
 
-const baseUrl = "http://localhost:3000/api";
-const authUrl = `${baseUrl}/auth`;
+const endpoint = `${Env.API_URL}/auth`;
 
 function create(args) {
-  return axios.post(authUrl, args).then((res) => {
+  return axios.post(endpoint, args).then((res) => {
     return res.data;
   });
 }
 
 function index(token) {
-  return axios.get(authUrl, {
+  return axios.get(endpoint, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
