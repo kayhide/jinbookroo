@@ -14,9 +14,14 @@ let
   };
 
   env-overlay = self: super: {
-    my-gigalixir = super.runCommand "my-gigalixir" { } ''
+    my-gigalixir = super.runCommand "my-gigalixir"
+      {
+        buildInputs = [ super.makeWrapper ];
+      } ''
       mkdir -p $out/bin
       ln -s ${self.poetry-env}/bin/gigalixir $out/bin/gigalixir
+      wrapProgram $out/bin/gigalixir \
+        --set TERM xterm
     '';
 
     my-app-env = super.buildEnv {
